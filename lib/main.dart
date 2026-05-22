@@ -70,6 +70,7 @@ class MyApp extends StatelessWidget {
   @override //上書き
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       //Googleが推奨するデザイン体系でスマホっぽい機能も多々
       title: 'きたっくま',
       theme: ThemeData(
@@ -108,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // 株価関連の変数
   String _stockPrice = '---';
   String _stockTrend = '▲';
-  bool _isLoadingStock = true;
+  bool _isLoadingStock = true; //株価取得中かどうか
 
   @override
   void initState() {
@@ -157,30 +158,37 @@ class _MyHomePageState extends State<MyHomePage> {
 
     try {
       final response = await http.get(
-        Uri.parse('https://finance.yahoo.co.jp/quote/6952.T'),
+        Uri.parse(
+          'https://finance.yahoo.co.jp/quote/6952.T',
+        ), //URLはUri型に変換する必要がある
       );
       if (response.statusCode == 200) {
-        final document = html_parser.parse(response.body);
+        //200はサーバーからのレスポンスに成功したっていう意味
+        final document = html_parser.parse(
+          response.body,
+        ); //取得したHTMLテキストをDartで使える構造に変換
 
         // 1. 現在値の取得
         // Yahoo Finance JPの構造では、現在値は _StyledNumber__value クラスの最初のほうにある
         final numbers = document.querySelectorAll(
-          'span[class*="_StyledNumber__value"]',
+          'span[class*="_StyledNumber__value"]', //株価表示部分の要素をまとめて取得
         );
 
         String? currentPrice;
-        // 最初の StyledNumber__value が現在値であることが多い
+        // 最初の StyledNumber__value が現在値であることが多い　→　検証済み
         if (numbers.isNotEmpty) {
           currentPrice = numbers[0].text;
         }
 
         // 2. 前日終値の取得 (比較用)
         String? prevClose;
-        final listItems = document.querySelectorAll('li');
+        final listItems = document.querySelectorAll(
+          'li',
+        ); //前日終値の表記がliタグの中にあることが多い　→　検証済み
         for (var item in listItems) {
           if (item.text.contains('前日終値')) {
             final val = item.querySelector(
-              'span[class*="_StyledNumber__value"]',
+              'span[class*="_StyledNumber__value"]', //前日終値の取得
             );
             if (val != null) {
               prevClose = val.text;
@@ -195,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
           final prev = double.tryParse(prevClose.replaceAll(',', '')) ?? 0.0;
 
           setState(() {
-            _stockPrice = currentPrice!;
+            _stockPrice = currentPrice!; //nullじゃないことを示す。
             _stockTrend = current >= prev ? '▲' : '▼';
             _isLoadingStock = false;
           });
@@ -619,7 +627,7 @@ class _MyHomePageState extends State<MyHomePage> {
         //flutterLocalNotificationsPlugin 通知を送るためのプラグイン　zonedSchedule　予約実行
         0, //通知の管理ID
         '食堂の注文ができるよ！', //通知の中身
-        'この通知をタップしてきたっくまから食堂ページに移動しよう',
+        'この通知をタップしてきたっくまから食堂ページに移動しよう\nリモートワークの人は関係ないけどね',
         tz.TZDateTime.from(
           lunchTime,
           tz.local,
@@ -904,7 +912,7 @@ class _MyHomePageState extends State<MyHomePage> {
             // --- 株価表示エリア ---
             Positioned(
               //ミリ単位での場所決め
-              top: 80, // 日付表示の下に空間を開けて配置
+              top: 120, // 日付表示の下に空間を開けて配置
               left: basePadding,
               child: GestureDetector(
                 onTap: () async {
@@ -1016,8 +1024,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
 
             Align(
-              //ざっくり方向で決める
-              alignment: Alignment.center,
+              // 0.0 が中央、1.0 が一番下。少し下にずらすために 0.3 に設定
+              alignment: const Alignment(0, 0.2),
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(basePadding),
                 child: ConstrainedBox(
@@ -1081,7 +1089,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //右上のNewsボタン
             Positioned(
               top: 25, // 画面の一番上からの距離
-              right: 25, // 画面の右端からの距離
+              right: 15, // 画面の右端からの距離
               child: GestureDetector(
                 onTap: () async {
                   final Uri url = Uri.parse(
@@ -1094,8 +1102,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
                   children: [
                     Container(
-                      width: 55, // ボタンのサイズ
-                      height: 55,
+                      width: 45, // ボタンのサイズ
+                      height: 45,
                       decoration: BoxDecoration(
                         color: Colors.white, // 背景を白にして画像を目立たせる
                         shape: BoxShape.circle, // 丸型ボタン
@@ -1126,6 +1134,65 @@ class _MyHomePageState extends State<MyHomePage> {
                     const SizedBox(height: 4),
                     const Text(
                       'ニュース',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            //帰宅電車ボタン
+            Positioned(
+              top: 25, // 画面の一番上からの距離
+              right: 80, // 画面の右端からの距離
+              child: GestureDetector(
+                onTap: () async {
+                  final Uri url = Uri.parse(
+                    "https://ekitan.com/timetable/railway/line-station/169-9/d1?dt=20260514",
+                  );
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
+                },
+                child: Column(
+                  children: [
+                    Container(
+                      width: 45, // ボタンのサイズ
+                      height: 45,
+                      decoration: BoxDecoration(
+                        color: Colors.white, // 背景を白にして画像を目立たせる
+                        shape: BoxShape.circle, // 丸型ボタン
+                        border: Border.all(
+                          color: const Color.fromARGB(255, 221, 221, 221),
+                        ), // 枠線を追加
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 4,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/image/train_icon.png', // ここに電車時刻表用画像
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
+                                Icons.train,
+                                color: Color(0xFF0033A0),
+                                size: 30,
+                              ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      '電車時刻表',
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.bold,
