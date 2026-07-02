@@ -1,6 +1,3 @@
-//TestFlightでの配布を行う(社員限定)
-//Studioのほうに登録
-
 //クラス作成とインスタンス化のメリット
 //class Todo{
 //  String title;
@@ -36,6 +33,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
+import 'soccer_page.dart'; // 遷移先のページを読み込む
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin(); //通知機能を使うためにその機能が入ってるライブラリからとりまインスタンス化しとくmain()の上でグローバルとしてどこからでも使えるように
@@ -879,7 +877,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             const Text(
-              'ーCASIO版ー',
+              'ー便利ページー',
               style: TextStyle(
                 color: Colors.lightBlueAccent,
                 fontSize: 14,
@@ -1230,6 +1228,58 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
 
+            // 右端中央の白紙ページ遷移ボタン
+            Align(
+              alignment: Alignment.centerRight,
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => const BlankPage(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0); // 右から左へスライド
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+                child: Container(
+                  width: 30,
+                  height: 60,
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 62, 85, 136),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      bottomLeft: Radius.circular(40),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 4,
+                        offset: Offset(-2, 0),
+                      ),
+                    ],
+                  ),
+                  // アイコンを少し右側にずらす（Paddingで左に余白を入れて右に押し出す）
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 6),
+                    child: Icon(
+                      Icons.play_arrow, // ▶ボタン
+                      color: Colors.white,
+                      size: 26, // 枠に綺麗に収まるように少しだけサイズ調整
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
             SafeArea(
               minimum: EdgeInsets.only(left: 10, bottom: 8),
               child: Align(
@@ -1278,7 +1328,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     const SizedBox(height: 8), // ボタンとVer表記の間の隙間
                     Text(
-                      'Ver.1.0.0',
+                      'Ver.1.0.1',
                       style: TextStyle(fontSize: 11, color: Colors.black54),
                     ),
                   ],
