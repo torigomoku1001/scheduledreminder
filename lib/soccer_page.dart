@@ -67,7 +67,58 @@ class BlankPage extends StatelessWidget {
           ],
         ),
       ),
-      
+      body: Stack(
+        children: [
+          // 元の白紙テキスト
+          const Center(
+            child: Text(
+              '白紙のページ',
+              style: TextStyle(fontSize: 20, color: Colors.black54),
+            ),
+          ),
+
+          // 左端中央の戻るボタン（main.dartのボタンの完全な左右反転）
+          Align(
+            alignment: Alignment.centerLeft,
+            child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop(); // スライドして元のページに戻る
+              },
+              child: Container(
+                width: 30,
+                height: 60,
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 62, 85, 136),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(40),
+                    bottomRight: Radius.circular(40),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 4,
+                      offset: Offset(2, 0), // 影の向きも反転
+                    ),
+                  ],
+                ),
+                // Paddingで右に余白を入れて左に押し出す
+                child: const Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  // RotatedBoxで ▶ を180度回転させて ◀ にする
+                  child: RotatedBox(
+                    quarterTurns: 2,
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 26,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
