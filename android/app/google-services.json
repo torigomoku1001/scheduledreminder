@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "989938081834",
+    "project_id": "soccer-score-dbdc4",
+    "storage_bucket": "soccer-score-dbdc4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:989938081834:android:d296dd2f31a12be178e353",
+        "android_client_info": {
+          "package_name": "com.example.scheduledreminder_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7CmQJhcwJTKa2sHk6Gsk4pJP3h7ABzhg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
