@@ -34,12 +34,18 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
 import 'soccer_page.dart'; // 遷移先のページを読み込む
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin(); //通知機能を使うためにその機能が入ってるライブラリからとりまインスタンス化しとくmain()の上でグローバルとしてどこからでも使えるように
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   tz.initializeTimeZones();
 
@@ -1235,7 +1241,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onTap: () {
                   Navigator.of(context).push(
                     PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => const BlankPage(),
+                      pageBuilder: (context, animation, secondaryAnimation) => const SoccerPage(),
                       transitionsBuilder: (context, animation, secondaryAnimation, child) {
                         const begin = Offset(1.0, 0.0); // 右から左へスライド
                         const end = Offset.zero;
