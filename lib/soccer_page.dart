@@ -307,16 +307,23 @@ class _SoccerPageState extends State<SoccerPage> {
           ),
           const SizedBox(height: 48),
           ElevatedButton(
-            onPressed: isWednesday ? _submitData : null, 
+            onPressed: isWednesday ? _submitData : null,
             child: Text(isWednesday ? 'データ更新' : '水曜日のみ更新可能'),
           ),
           const SizedBox(height: 48), // 下の方に移動
           const Text(
             '【ルール】\n'
             '・10人以上のメンバーがいる場合のみ計測\n'
-            '・片方が参加してない場合は計測されない\n'
-            '・同じチームの時は計測されない',
-            style: TextStyle(fontSize: 14, color: Colors.black87, height: 1.5), // 字を大きく、黒っぽく
+            '・片方が参加してない→計測×\n'
+            '  ※2週連続不参加→参加者の計測◯\n'
+            '  ※大怪我による長期離脱は要相談\n'
+            '  ※測るのめんどい日もくるけどしょうがない\n',
+
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+              height: 1.5,
+            ), // 字を大きく、黒っぽく
             textAlign: TextAlign.center,
           ),
         ],
